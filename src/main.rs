@@ -2,6 +2,8 @@ use std::{error, path::PathBuf};
 use structopt::StructOpt;
 use serde::{Deserialize, Serialize};
 
+mod pm_error;
+
 #[derive(StructOpt)]
 enum Opt {
     Add {
@@ -37,8 +39,8 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 
     match opt {
         Opt::Add { path } => add(path)?,
-        Opt::List => println!("List"),
-        Opt::Other(_) => println!("Other"),
+        Opt::List => list()?,
+        Opt::Other(projects) => load_project(projects.first().ok_or_else(|| pm_error::Error)?)?,
     }
 
     Ok(())
@@ -48,4 +50,12 @@ fn add(path: PathBuf) -> Result<(), Box<dyn error::Error>> {
     println!("Path {}", path.display());
 
     Ok(())
+}
+
+fn list() -> Result<(), Box<dyn error::Error>> {
+    todo!()
+}
+
+fn load_project(project_name: &str) -> Result<(), Box<dyn error::Error>> {
+    todo!()
 }
