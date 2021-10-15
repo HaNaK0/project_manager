@@ -1,7 +1,6 @@
 use std::{error, fmt::Display};
 
-
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub struct Error;
 
 impl Display for Error {

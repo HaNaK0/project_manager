@@ -1,7 +1,7 @@
-[
-    {
+{
+    "rust" : {
         "name" : "rust",
-        "commands" : [
+        "open-commands" : [
             {
                 "command" : "code",
                 "arguments" : [
@@ -10,4 +10,4 @@
             }
         ]
     }
-]
+}
