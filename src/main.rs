@@ -63,9 +63,11 @@ fn add(path: PathBuf, project_type: Option<String>, name: Option<String>) -> Res
         file_name.to_str().unwrap().into() // error handling does not want to work here because E0277
     };
 
-    
+    let mut projects = load_projects()?;
 
-    let projects = load_projects()?;
+    if projects.contains_key(&name) {
+        println!("A project with the name {} already exist in projects and will be replaced with new project", name)
+    }
 
     Ok(())
 }
