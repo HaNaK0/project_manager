@@ -69,8 +69,33 @@ fn add(path: PathBuf, project_type: Option<String>, name: Option<String>) -> Res
         println!("A project with the name {} already exist in projects and will be replaced with new project", name)
     }
 
+    let mut project_path = path.clone();
+    project_path.push(".project_manager");
+    project_path.push("project.json");
+
+    let project_types = load_project_types()?;
+
+    if !project_path.exists() {
+        let project_type = match project_type {
+            Some(project_type) => Ok(project_type),
+            None => Err("No project file was found and no project type was set"),
+        }?;
+
+        let file = File::create(project_path)?;
+
+        serde_json::to_writer_pretty(file, &project_types[&project_type])?;
+    }
+
+    projects.insert(name, path);
+
+    let config_path = get_config_path()?;
+
+    let file = File::create(config_path)?;
+
+    serde_json::to_writer_pretty(file, &projects)?;
+
     Ok(())
-}
+} // TODO: figure out how to turn into a transaction
 
 fn list() -> Result<(), Box<dyn error::Error>> {
     let projects = load_projects()?;
@@ -87,15 +112,7 @@ fn open_project(project_name: &str) -> Result<(), Box<dyn error::Error>> {
 }
 
 fn load_projects() -> Result<HashMap<String, PathBuf>, Box<dyn error::Error>> {
-    let mut config_path: PathBuf =
-        if let Some(project_dirs) = &ProjectDirs::from("", "", "project_manager") {
-            Ok(project_dirs.project_path())
-        } else {
-            Err("failed finding the config directory")
-        }?
-        .into();
-
-    config_path.push("config.json");
+    let config_path = get_config_path()?;
     match File::open(config_path) {
         Ok(file) => {
             let reader = BufReader::new(file);
@@ -109,4 +126,33 @@ fn load_projects() -> Result<HashMap<String, PathBuf>, Box<dyn error::Error>> {
             }
         }
     }
+}
+
+fn load_project_types() -> Result<HashMap<String, ProjectType>, Box<dyn error::Error>> {
+    let mut path = PathBuf::from("./data");
+    path.push("project_types.json"); // TODO: find a better place for the project types
+
+    match File::open(path) {
+        Ok(file) => {
+            let reader = BufReader::new(file);
+            Ok(serde_json::from_reader(reader)?)
+        }
+        Err(err) => {
+            Err(err.into())
+        }
+    }
+}
+
+fn get_config_path() -> Result<PathBuf, Box<dyn error::Error>> {
+    let mut config_path: PathBuf =
+        if let Some(project_dirs) = &ProjectDirs::from("", "", "project_manager") {
+            Ok(project_dirs.project_path())
+        } else {
+            Err("failed finding the config directory")
+        }?
+        .into();
+
+    config_path.push("config.json");
+
+    Ok(config_path)
 }
