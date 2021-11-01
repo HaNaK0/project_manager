@@ -9,5 +9,16 @@
                 ]
             }
         ]
+    },
+    "python" : {
+        "name" : "python",
+        "open_commands" : [
+            {
+                "command": "code",
+                "arguments": [
+                    "$root"
+                ]
+            }
+        ]
     }
 }
