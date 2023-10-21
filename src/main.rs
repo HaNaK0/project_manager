@@ -151,8 +151,9 @@ fn load_project_types() -> Result<HashMap<String, ProjectType>> {
 }
 
 fn get_config_path() -> Result<PathBuf> {
+    let project_dirs = ProjectDirs::from("", "HaNa", "project_manager");
     let mut config_path: PathBuf =
-        if let Some(project_dirs) = &ProjectDirs::from("", "HaNa", "project_manager") {
+        if let Some(project_dirs) = &project_dirs {
             Ok(project_dirs.config_dir())
         } else {
             Err(anyhow!("failed finding the config directory"))
